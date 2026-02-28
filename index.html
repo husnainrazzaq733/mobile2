@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NextGen Access</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="void-bg"></div>
+
+    <!-- Floating droplets -->
+    <div class="droplets-container" id="droplets-container"></div>
+
+    <div class="main-container">
+        <div class="glass-card" id="login-card">
+            <h1 class="glow-text">SYSTEM ACCESS</h1>
+            <p class="subtitle">Authenticate to proceed</p>
+
+            <form id="login-form">
+                <div class="input-group">
+                    <input type="text" id="username" required autocomplete="off" placeholder=" ">
+                    <label for="username">Username</label>
+                    <div class="border-glow"></div>
+                </div>
+
+                <div class="input-group">
+                    <input type="password" id="password" required autocomplete="off" placeholder=" ">
+                    <label for="password">Password</label>
+                    <div class="border-glow"></div>
+                </div>
+
+                <p id="error-msg" class="error-msg"></p>
+
+                <button type="submit" class="cyber-btn" id="login-btn">
+                    <span>INITIALIZE</span>
+                    <div class="btn-glow"></div>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Authorized view -->
+    <div class="auth-success" id="auth-success" style="display: none;">
+        <div class="success-ring"></div>
+        <h2 class="glow-text">ACCESS GRANTED</h2>
+        <p class="subtitle">Welcome, <span style="color: #00f0ff;">NextGen</span></p>
+        <div class="loading-bar">
+            <div class="loading-progress"></div>
+        </div>
+    </div>
+
+    <!-- Decryption UI -->
+    <div class="decryption-container" id="decryption-ui" style="display: none;">
+        <canvas id="decryption-canvas"></canvas>
+        <div class="decryption-overlay">
+            <h1 class="decryption-title glow-text" id="decrypt-title" style="font-size:3rem; margin-bottom:2rem;">
+                DECRYPTING DATA...</h1>
+            <div class="loading-bar"
+                style="width: 400px; height: 8px; border-radius: 4px; background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.3);">
+                <div class="loading-progress" id="decrypt-progress"
+                    style="width:0%; transition: width 0.1s linear; box-shadow: 0 0 15px var(--neon-blue);"></div>
+            </div>
+            <div class="data-streams" id="data-streams-text"></div>
+        </div>
+    </div>
+
+    <!-- Android OS UI -->
+    <div class="android-os" id="android-ui" style="display: none;">
+        <div class="status-bar">
+            <div class="time" id="clock">12:00</div>
+            <div class="icons">
+                <span>📶</span>
+                <span>🔋</span>
+            </div>
+        </div>
+
+        <div class="app-grid">
+            <div class="app-icon whatsapp" onclick="openApp('WhatsApp')">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
+                <span>WhatsApp</span>
+            </div>
+            <div class="app-icon facebook" onclick="openApp('Facebook')">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg" alt="Facebook">
+                <span>Facebook</span>
+            </div>
+            <div class="app-icon instagram" onclick="openApp('Instagram')">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" alt="Instagram">
+                <span>Instagram</span>
+            </div>
+            <div class="app-icon snapchat" onclick="openApp('Snapchat')">
+                <img src="https://upload.wikimedia.org/wikipedia/en/c/c4/Snapchat_logo.svg" alt="Snapchat">
+                <span>Snapchat</span>
+            </div>
+            <div class="app-icon settings" onclick="openApp('Settings')">
+                <div class="glass-icon">⚙️</div>
+                <span>Settings</span>
+            </div>
+            <div class="app-icon gallery" onclick="openApp('Gallery')">
+                <div class="glass-icon">🖼️</div>
+                <span>Gallery</span>
+            </div>
+        </div>
+
+        <div class="dock">
+            <div class="app-icon" onclick="openApp('Phone')">
+                <div class="glass-icon">📞</div>
+            </div>
+            <div class="app-icon" onclick="openApp('Messages')">
+                <div class="glass-icon">💬</div>
+            </div>
+            <div class="app-icon" onclick="openApp('Browser')">
+                <div class="glass-icon">🌐</div>
+            </div>
+            <div class="app-icon" onclick="openApp('Camera')">
+                <div class="glass-icon">📷</div>
+            </div>
+        </div>
+
+        <div class="nav-bar">
+            <div class="nav-btn">≡</div>
+            <div class="nav-btn">⌂</div>
+            <div class="nav-btn">◁</div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

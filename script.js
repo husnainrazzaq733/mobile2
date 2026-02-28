@@ -1,0 +1,306 @@
+document.addEventListener('DOMContentLoaded', () => {
+    // Generate Floating Droplets
+    const container = document.getElementById('droplets-container');
+    const numDroplets = 15;
+
+    for (let i = 0; i < numDroplets; i++) {
+        const droplet = document.createElement('div');
+        droplet.classList.add('droplet');
+
+        // Random properties
+        const size = Math.random() * 20 + 5; // 5px to 25px
+        const posX = Math.random() * 100; // 0% to 100%
+        const posY = Math.random() * 100; // 0% to 100%
+        const duration = Math.random() * 3 + 2; // 2s to 5s
+        const swayDuration = Math.random() * 4 + 3; // 3s to 7s
+        const delay = Math.random() * 2; // 0s to 2s
+
+        droplet.style.width = `${size}px`;
+        droplet.style.height = `${size}px`;
+        droplet.style.left = `${posX}%`;
+        droplet.style.top = `${posY}%`;
+
+        droplet.style.setProperty('--duration', `${duration}s`);
+        droplet.style.setProperty('--sway-duration', `${swayDuration}s`);
+        droplet.style.animationDelay = `${delay}s`;
+
+        container.appendChild(droplet);
+    }
+
+    // Login Logic
+    const form = document.getElementById('login-form');
+    const errorMsg = document.getElementById('error-msg');
+    const authSuccess = document.getElementById('auth-success');
+    const loginCard = document.getElementById('login-card');
+    const progressBar = document.querySelector('.loading-progress');
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const user = document.getElementById('username').value;
+        const pass = document.getElementById('password').value;
+
+        if (user === 'nextgen' && pass === 'nextgen105') {
+            // Success
+            errorMsg.style.opacity = '0';
+
+            // Add a cinematic glitch/hide effect to the card
+            loginCard.style.transform = 'scale(0.9)';
+            loginCard.style.opacity = '0';
+
+            setTimeout(() => {
+                loginCard.style.display = 'none';
+                authSuccess.style.display = 'flex';
+
+                // Animate loading bar
+                setTimeout(() => {
+                    progressBar.style.width = '100%';
+
+                    // After loading is complete, redirect or show website content
+                    setTimeout(() => {
+                        authSuccess.style.display = 'none';
+                        document.getElementById('decryption-ui').style.display = 'flex';
+                        startDecryptionAnimation();
+                    }, 2500);
+
+                }, 500);
+
+            }, 500);
+
+        } else {
+            // Error
+            errorMsg.textContent = 'ACCESS DENIED: INCOMPATIBLE CREDENTIALS';
+            errorMsg.style.opacity = '1';
+
+            // Shake effect
+            loginCard.style.animation = 'none';
+            loginCard.offsetHeight; // trigger reflow
+            loginCard.style.animation = 'shake 0.5s';
+
+            setTimeout(() => {
+                loginCard.style.animation = 'card-anti-gravity 6s ease-in-out infinite alternate';
+            }, 500);
+        }
+    });
+});
+
+// Add shake animation dynamically
+const style = document.createElement('style');
+style.innerHTML = `
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  50% { transform: translateX(10px); }
+  75% { transform: translateX(-10px); }
+  100% { transform: translateX(0); }
+}
+`;
+document.head.appendChild(style);
+
+function startDecryptionAnimation() {
+    const canvas = document.getElementById('decryption-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+
+    // Set canvas to full screen
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+
+    // 3D Particles
+    let particles = [];
+    const numParticles = 400;
+    for (let i = 0; i < numParticles; i++) {
+        particles.push({
+            x: Math.random() * canvas.width * 2 - canvas.width,
+            y: Math.random() * canvas.height * 2 - canvas.height,
+            z: Math.random() * 1000,
+            size: Math.random() * 2 + 0.5,
+            speed: Math.random() * 3 + 1,
+            angle: Math.random() * Math.PI * 2,
+            radius: Math.random() * 200 + 50
+        });
+    }
+
+    let streamsText = document.getElementById('data-streams-text');
+    let streamsInterval = setInterval(() => {
+        let text = '';
+        for (let i = 0; i < 8; i++) {
+            text += Math.random().toString(16).substr(2, 8).toUpperCase() + ' ';
+        }
+        streamsText.innerText = text + '\\n' + streamsText.innerText.substring(0, 500);
+    }, 100);
+
+    function animate() {
+        // Clear background with slight fade for trail effect
+        ctx.fillStyle = 'rgba(2, 8, 19, 0.3)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Draw vertical data streams hints
+        ctx.fillStyle = 'rgba(0, 200, 255, 0.05)';
+        for (let i = 0; i < 5; i++) {
+            let streamX = Math.random() * canvas.width;
+            ctx.fillRect(streamX, 0, 1 + Math.random() * 3, canvas.height);
+        }
+
+        particles.forEach(p => {
+            p.angle += 0.02;
+            p.z -= p.speed;
+
+            if (p.z <= 0) {
+                p.z = 1000;
+                p.x = Math.random() * canvas.width * 2 - canvas.width;
+                p.y = Math.random() * canvas.height * 2 - canvas.height;
+            }
+
+            // 3D projection
+            let scale = 600 / p.z;
+            let px = (p.x) * scale + canvas.width / 2;
+            let py = (p.y) * scale + canvas.height / 2;
+
+            // Swirl effect
+            px += Math.cos(p.angle) * p.radius * scale * 0.1;
+            py += Math.sin(p.angle) * p.radius * scale * 0.1;
+
+            ctx.beginPath();
+            ctx.arc(px, py, p.size * scale, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(${150 + Math.random() * 105}, 240, 255, ${1 - p.z / 1500})`;
+            ctx.shadowBlur = 15 * scale;
+            ctx.shadowColor = '#00f0ff';
+            ctx.fill();
+        });
+
+        requestAnimationFrame(animate);
+    }
+    animate();
+
+    // Progress bar and error simulation
+    let progress = 0;
+    let pb = document.getElementById('decrypt-progress');
+    let title = document.getElementById('decrypt-title');
+
+    let simInterval = setInterval(() => {
+        progress += Math.random() * 0.8;
+        if (progress >= 100) {
+            progress = 100;
+            clearInterval(simInterval);
+            clearInterval(streamsInterval);
+
+            // Success effect for initial load
+            canvas.style.filter = 'hue-rotate(50deg) saturate(2) brightness(1.2)';
+            title.innerText = 'ACCESS GRANTED';
+            title.style.color = '#00ffaa';
+            title.style.textShadow = '0 0 20px rgba(0, 255, 170, 0.8)';
+            pb.style.background = '#00ffaa';
+            pb.style.boxShadow = '0 0 20px #00ffaa';
+
+            setTimeout(() => {
+                let decUi = document.getElementById('decryption-ui');
+                decUi.style.transition = 'opacity 0.5s';
+                decUi.style.opacity = '0';
+                setTimeout(() => {
+                    decUi.style.display = 'none';
+                    document.getElementById('android-ui').style.display = 'flex';
+                    startClock();
+                }, 500);
+            }, 1000);
+        }
+        pb.style.width = progress + '%';
+
+        // Random glitchy text during decryption
+        if (progress < 100 && Math.random() > 0.8) {
+            const originalText = 'DECRYPTING DATA...';
+            const glitchChars = '!<>-_\\/[]{}—=+*^?#_';
+            let glitchText = '';
+            for (let i = 0; i < originalText.length; i++) {
+                if (Math.random() > 0.8) glitchText += glitchChars[Math.floor(Math.random() * glitchChars.length)];
+                else glitchText += originalText[i];
+            }
+            title.innerText = glitchText;
+            setTimeout(() => {
+                if (progress < 100) title.innerText = originalText;
+            }, 100);
+        }
+
+    }, 80);
+}
+
+// Android OS Functionality
+function startClock() {
+    if (window.clockInterval) return;
+    window.clockInterval = setInterval(() => {
+        const now = new Date();
+        const hrs = now.getHours().toString().padStart(2, '0');
+        const mins = now.getMinutes().toString().padStart(2, '0');
+        document.getElementById('clock').innerText = `${hrs}:${mins}`;
+    }, 1000);
+}
+
+function openApp(appName) {
+    document.getElementById('android-ui').style.display = 'none';
+    const decUi = document.getElementById('decryption-ui');
+    decUi.style.opacity = '1';
+    decUi.style.display = 'flex';
+
+    // Reset canvas and UI constraints
+    const canvas = document.getElementById('decryption-canvas');
+    canvas.style.filter = 'none';
+    const title = document.getElementById('decrypt-title');
+    title.innerText = `BYPASSING ${appName.toUpperCase()} SECURITY...`;
+    title.style.color = '#fff';
+    title.style.textShadow = 'var(--text-glow)';
+    const pb = document.getElementById('decrypt-progress');
+    pb.style.width = '0%';
+    pb.style.background = 'var(--neon-blue)';
+    pb.style.boxShadow = '0 0 15px var(--neon-blue)';
+    pb.parentElement.style.borderColor = 'rgba(0, 240, 255, 0.3)';
+    pb.parentElement.style.background = 'rgba(0, 240, 255, 0.1)';
+
+    startAppFailureAnimation(appName);
+}
+
+function startAppFailureAnimation(appName) {
+    let progress = 0;
+    let pb = document.getElementById('decrypt-progress');
+    let title = document.getElementById('decrypt-title');
+
+    let simInterval = setInterval(() => {
+        progress += Math.random() * 0.4;
+        if (progress >= 100) {
+            progress = 100;
+            clearInterval(simInterval);
+
+            const canvas = document.getElementById('decryption-canvas');
+            canvas.style.filter = 'hue-rotate(150deg) saturate(3) contrast(1.5)';
+
+            setTimeout(() => {
+                title.innerHTML = `DATA CAN\\'T DECRYPT<br><span style="color:#ff3366; font-size:1.5rem; text-shadow:0 0 15px #ff3366; letter-spacing: 2px;">PLEASE CONTACT TO THE ADMINISTRATION</span>`;
+                title.style.color = '#ff3366';
+                title.style.textShadow = '0 0 20px rgba(255, 51, 102, 0.8)';
+                pb.style.background = '#ff3366';
+                pb.style.boxShadow = '0 0 20px #ff3366';
+                pb.parentElement.style.borderColor = 'rgba(255, 51, 102, 0.5)';
+                pb.parentElement.style.background = 'rgba(255, 51, 102, 0.1)';
+            }, 500);
+        }
+        pb.style.width = progress + '%';
+
+        if (progress < 100 && Math.random() > 0.8) {
+            const originalText = `BYPASSING ${appName.toUpperCase()} SECURITY...`;
+            const glitchChars = '!<>-_\\\\/[]{}—=+*^?#_';
+            let glitchText = '';
+            for (let i = 0; i < originalText.length; i++) {
+                if (Math.random() > 0.8) glitchText += glitchChars[Math.floor(Math.random() * glitchChars.length)];
+                else glitchText += originalText[i];
+            }
+            title.innerText = glitchText;
+            setTimeout(() => {
+                if (progress < 100) title.innerText = originalText;
+            }, 100);
+        }
+    }, 150);
+}
