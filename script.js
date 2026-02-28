@@ -32,7 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const errorMsg = document.getElementById('error-msg');
     const authSuccess = document.getElementById('auth-success');
     const loginCard = document.getElementById('login-card');
-    const progressBar = document.querySelector('.loading-progress');
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -52,18 +51,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 loginCard.style.display = 'none';
                 authSuccess.style.display = 'flex';
 
-                // Animate loading bar
+                // Redirect or show website content after loading completes
                 setTimeout(() => {
-                    progressBar.style.width = '100%';
-
-                    // After loading is complete, redirect or show website content
-                    setTimeout(() => {
-                        authSuccess.style.display = 'none';
-                        document.getElementById('decryption-ui').style.display = 'flex';
-                        startDecryptionAnimation();
-                    }, 2500);
-
-                }, 500);
+                    authSuccess.style.display = 'none';
+                    document.getElementById('decryption-ui').style.display = 'flex';
+                    startDecryptionAnimation();
+                }, 2500);
 
             }, 500);
 
@@ -240,67 +233,61 @@ function startClock() {
     }, 1000);
 }
 
+// Store global interval IDs to clear them on back
+let currentTextInterval = null;
+let currentLoadingTimeout = null;
+
 function openApp(appName) {
     document.getElementById('android-ui').style.display = 'none';
-    const decUi = document.getElementById('decryption-ui');
-    decUi.style.opacity = '1';
-    decUi.style.display = 'flex';
 
-    // Reset canvas and UI constraints
-    const canvas = document.getElementById('decryption-canvas');
-    canvas.style.filter = 'none';
-    const title = document.getElementById('decrypt-title');
-    title.innerText = `BYPASSING ${appName.toUpperCase()} SECURITY...`;
-    title.style.color = '#fff';
-    title.style.textShadow = 'var(--text-glow)';
-    const pb = document.getElementById('decrypt-progress');
-    pb.style.width = '0%';
-    pb.style.background = 'var(--neon-blue)';
-    pb.style.boxShadow = '0 0 15px var(--neon-blue)';
-    pb.parentElement.style.borderColor = 'rgba(0, 240, 255, 0.3)';
-    pb.parentElement.style.background = 'rgba(0, 240, 255, 0.1)';
+    const loadingUi = document.getElementById('app-loading-ui');
+    const loadingText = document.getElementById('app-loading-text');
+    const loaderCircle = document.querySelector('.loader-circle');
+    const errorDialog = document.getElementById('error-dialog');
+    const topAppName = document.getElementById('top-app-name');
+    const loaderContent = document.getElementById('loader-content');
 
-    startAppFailureAnimation(appName);
+    // Reset state
+    loadingUi.style.display = 'flex';
+    loaderContent.style.display = 'flex';
+    loaderCircle.style.display = 'block';
+    loadingText.style.display = 'block';
+    topAppName.innerText = appName;
+    loadingText.innerText = `LOADING ${appName.toUpperCase()}...`;
+    errorDialog.style.display = 'none';
+
+    // Random loading time between 60 to 120 seconds (60000ms to 120000ms)
+    const loadingTime = (Math.floor(Math.random() * 60) + 60) * 1000;
+
+    let textDots = 0;
+    currentTextInterval = setInterval(() => {
+        textDots = (textDots + 1) % 4;
+        loadingText.innerText = `LOADING ${appName.toUpperCase()}` + '.'.repeat(textDots);
+    }, 500);
+
+    currentLoadingTimeout = setTimeout(() => {
+        clearInterval(currentTextInterval);
+
+        loaderContent.style.display = 'none';
+
+        // Show error dialog
+        errorDialog.style.display = 'block';
+
+        // Add a harsh glitch effect to the background
+        loadingUi.style.animation = 'shake 0.3s';
+        setTimeout(() => {
+            loadingUi.style.animation = 'none';
+        }, 300);
+
+    }, loadingTime);
 }
 
-function startAppFailureAnimation(appName) {
-    let progress = 0;
-    let pb = document.getElementById('decrypt-progress');
-    let title = document.getElementById('decrypt-title');
+function closeApp() {
+    // Clear any ongoing loading timeouts or intervals
+    if (currentTextInterval) clearInterval(currentTextInterval);
+    if (currentLoadingTimeout) clearTimeout(currentLoadingTimeout);
 
-    let simInterval = setInterval(() => {
-        progress += Math.random() * 0.4;
-        if (progress >= 100) {
-            progress = 100;
-            clearInterval(simInterval);
-
-            const canvas = document.getElementById('decryption-canvas');
-            canvas.style.filter = 'hue-rotate(150deg) saturate(3) contrast(1.5)';
-
-            setTimeout(() => {
-                title.innerHTML = `DATA CAN\\'T DECRYPT<br><span style="color:#ff3366; font-size:1.5rem; text-shadow:0 0 15px #ff3366; letter-spacing: 2px;">PLEASE CONTACT TO THE ADMINISTRATION</span>`;
-                title.style.color = '#ff3366';
-                title.style.textShadow = '0 0 20px rgba(255, 51, 102, 0.8)';
-                pb.style.background = '#ff3366';
-                pb.style.boxShadow = '0 0 20px #ff3366';
-                pb.parentElement.style.borderColor = 'rgba(255, 51, 102, 0.5)';
-                pb.parentElement.style.background = 'rgba(255, 51, 102, 0.1)';
-            }, 500);
-        }
-        pb.style.width = progress + '%';
-
-        if (progress < 100 && Math.random() > 0.8) {
-            const originalText = `BYPASSING ${appName.toUpperCase()} SECURITY...`;
-            const glitchChars = '!<>-_\\\\/[]{}—=+*^?#_';
-            let glitchText = '';
-            for (let i = 0; i < originalText.length; i++) {
-                if (Math.random() > 0.8) glitchText += glitchChars[Math.floor(Math.random() * glitchChars.length)];
-                else glitchText += originalText[i];
-            }
-            title.innerText = glitchText;
-            setTimeout(() => {
-                if (progress < 100) title.innerText = originalText;
-            }, 100);
-        }
-    }, 150);
+    // Hide App Loading UI and show Android UI
+    document.getElementById('app-loading-ui').style.display = 'none';
+    document.getElementById('android-ui').style.display = 'flex';
 }
