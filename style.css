@@ -139,6 +139,65 @@ body {
     }
 }
 
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.popup-dialog {
+    position: relative;
+    top: auto;
+    left: auto;
+    transform: none;
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes popIn {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.popup-btn {
+    border-color: #ff3366;
+    color: #ff3366;
+}
+
+.popup-btn:hover {
+    background: rgba(255, 51, 102, 0.1);
+    box-shadow: 0 0 20px rgba(255, 51, 102, 0.4), inset 0 0 10px rgba(255, 51, 102, 0.2);
+}
+
+.popup-btn .btn-glow {
+    background: linear-gradient(90deg, transparent, rgba(255, 51, 102, 0.4), transparent);
+}
+
+.success-dialog {
+    background: rgba(10, 15, 30, 0.9);
+    border: 1px solid #00ffaa;
+    border-radius: 15px;
+    padding: 2.5rem;
+    text-align: center;
+    width: 85%;
+    max-width: 400px;
+    box-shadow: 0 0 30px rgba(0, 255, 170, 0.3), inset 0 0 20px rgba(0, 255, 170, 0.1);
+}
+
 .glass-card {
     background: var(--glass-bg);
     backdrop-filter: blur(20px);
@@ -434,6 +493,47 @@ body {
     text-align: center;
 }
 
+.circular-progress-container {
+    position: relative;
+    width: 150px;
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 1rem 0;
+}
+
+.circular-progress {
+    transform: rotate(-90deg);
+}
+
+.circular-progress circle {
+    fill: none;
+    stroke-width: 8;
+    stroke-linecap: round;
+}
+
+.progress-bg {
+    stroke: rgba(0, 240, 255, 0.1);
+}
+
+.progress-bar {
+    stroke: var(--neon-blue);
+    stroke-dasharray: 377;
+    stroke-dashoffset: 377;
+    transition: stroke-dashoffset 0.1s linear, stroke 0.3s;
+    filter: drop-shadow(0 0 10px var(--neon-blue));
+}
+
+.progress-text {
+    position: absolute;
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--neon-blue);
+    text-shadow: 0 0 10px var(--neon-blue);
+    font-family: 'Courier New', Courier, monospace;
+}
+
 /* Android OS Styles */
 .android-os,
 .app-loading-container,
@@ -492,6 +592,27 @@ body {
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
 }
 
+.home-slider {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    width: 100%;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    flex-grow: 1;
+    scroll-behavior: smooth;
+    cursor: grab;
+    user-select: none;
+}
+
+.home-slider:active {
+    cursor: grabbing;
+}
+
+.home-slider::-webkit-scrollbar {
+    display: none;
+}
+
 .app-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -499,9 +620,30 @@ body {
     gap: 20px;
     padding: 30px;
     z-index: 2;
-    flex-grow: 1;
     align-content: start;
     justify-items: center;
+    min-width: 100%;
+    scroll-snap-align: start;
+}
+
+.page-indicators {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 15px;
+    z-index: 2;
+}
+
+.page-indicators .dot {
+    width: 6px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    transition: background 0.3s;
+}
+
+.page-indicators .dot.active {
+    background: rgba(255, 255, 255, 0.9);
 }
 
 .app-icon {
@@ -599,7 +741,8 @@ body {
     .auth-success {
         width: 380px;
         /* Standard phone width */
-        height: 780px;
+        height: 700px;
+        /* Reduced height from 780px to 700px */
         /* Standard phone height */
         top: 50%;
         left: 50%;

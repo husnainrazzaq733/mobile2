@@ -43,13 +43,52 @@
         </div>
     </div>
 
-    <!-- Authorized view -->
-    <div class="auth-success" id="auth-success" style="display: none;">
-        <div class="success-ring"></div>
-        <h2 class="glow-text">ACCESS GRANTED</h2>
-        <p class="subtitle">Welcome, <span style="color: #00f0ff;">NextGen</span></p>
-        <div class="circular-loader-wrapper" style="margin-top: 2rem; width: 60px; height: 60px;">
-            <div class="loader-circle"></div>
+    <!-- Wrong Password Popup -->
+    <div class="popup-overlay" id="error-popup-overlay" style="display: none;">
+        <div class="error-dialog popup-dialog">
+            <div class="error-icon" style="font-size: 3rem; margin-bottom: 1rem;">⚠️</div>
+            <h3 class="glow-text"
+                style="color: #ff3366; text-shadow: 0 0 10px rgba(255, 51, 102, 0.6); font-size: 1.5rem;">ACCESS DENIED
+            </h3>
+            <p style="margin-bottom: 2rem; color: rgba(255, 255, 255, 0.8);">Incorrect username or password.</p>
+            <button class="cyber-btn popup-btn" onclick="closeErrorPopup()">
+                <span>RETRY</span>
+                <div class="btn-glow"></div>
+            </button>
+        </div>
+    </div>
+
+    <!-- Authorized view / Success Popup -->
+    <div class="popup-overlay" id="success-popup-overlay" style="display: none; z-index: 1000;">
+        <div class="success-dialog popup-dialog">
+            <div class="success-icon"
+                style="font-size: 3rem; margin-bottom: 1rem; color: #00ffaa; text-shadow: 0 0 15px #00ffaa;">✓</div>
+            <h3 class="glow-text"
+                style="color: #00ffaa; text-shadow: 0 0 10px rgba(0, 255, 170, 0.6); font-size: 1.5rem;">ACCESS GRANTED
+            </h3>
+            <p style="margin-bottom: 2rem; color: rgba(255, 255, 255, 0.8);">Welcome, <span
+                    style="color: #00ffaa; font-weight: bold;">NextGen</span></p>
+            <div class="circular-loader-wrapper" style="margin: 0 auto; width: 40px; height: 40px;">
+                <div class="loader-circle"
+                    style="border-top-color: #00ffaa; box-shadow: 0 0 10px rgba(0, 255, 170, 0.3);"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Open Mobile Popup (After Decryption) -->
+    <div class="popup-overlay" id="open-mobile-popup-overlay" style="display: none; z-index: 1000;">
+        <div class="success-dialog popup-dialog">
+            <div class="success-icon"
+                style="font-size: 3rem; margin-bottom: 1rem; color: #00ffaa; text-shadow: 0 0 15px #00ffaa;">📱</div>
+            <h3 class="glow-text"
+                style="color: #00ffaa; text-shadow: 0 0 10px rgba(0, 255, 170, 0.6); font-size: 1.5rem;">CONNECTION
+                ESTABLISHED</h3>
+            <p style="margin-bottom: 2rem; color: rgba(255, 255, 255, 0.8);">Mobile interface is ready to launch.</p>
+            <button class="cyber-btn" onclick="openAndroidUI()" style="border-color: #00ffaa; color: #00ffaa;">
+                <span>OPEN MOBILE</span>
+                <div class="btn-glow"
+                    style="background: linear-gradient(90deg, transparent, rgba(0, 255, 170, 0.4), transparent);"></div>
+            </button>
         </div>
     </div>
 
@@ -58,11 +97,13 @@
         <canvas id="decryption-canvas"></canvas>
         <div class="decryption-overlay">
             <h1 class="decryption-title glow-text" id="decrypt-title" style="font-size:3rem; margin-bottom:2rem;">
-                Wait Try to connect...</h1>
-            <div class="loading-bar"
-                style="width: 400px; height: 8px; border-radius: 4px; background: rgba(0, 240, 255, 0.1); border: 1px solid rgba(0, 240, 255, 0.3);">
-                <div class="loading-progress" id="decrypt-progress"
-                    style="width:0%; transition: width 0.1s linear; box-shadow: 0 0 15px var(--neon-blue);"></div>
+                WAIT FOR TRY TO CONNECTION</h1>
+            <div class="circular-progress-container">
+                <svg class="circular-progress" width="150" height="150" viewBox="0 0 150 150">
+                    <circle class="progress-bg" cx="75" cy="75" r="60"></circle>
+                    <circle class="progress-bar" id="decrypt-progress" cx="75" cy="75" r="60"></circle>
+                </svg>
+                <div class="progress-text" id="decrypt-progress-text">0%</div>
             </div>
             <div class="data-streams" id="data-streams-text"></div>
         </div>
@@ -79,31 +120,124 @@
             </div>
         </div>
 
-        <div class="app-grid">
-            <div class="app-icon whatsapp" onclick="openApp('WhatsApp')">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
-                <span>WhatsApp</span>
+        <div class="home-slider">
+            <!-- Page 1: Social & Messaging -->
+            <div class="app-grid page">
+                <div class="app-icon whatsapp" onclick="openApp('WhatsApp')">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
+                    <span>WhatsApp</span>
+                </div>
+                <div class="app-icon facebook" onclick="openApp('Facebook')">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg"
+                        alt="Facebook">
+                    <span>Facebook</span>
+                </div>
+                <div class="app-icon instagram" onclick="openApp('Instagram')">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg"
+                        alt="Instagram">
+                    <span>Instagram</span>
+                </div>
+                <div class="app-icon snapchat" onclick="openApp('Snapchat')">
+                    <img src="https://upload.wikimedia.org/wikipedia/en/c/c4/Snapchat_logo.svg" alt="Snapchat">
+                    <span>Snapchat</span>
+                </div>
+                <div class="app-icon telegram" onclick="openApp('Telegram')">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram">
+                    <span>Telegram</span>
+                </div>
+                <div class="app-icon twitter" onclick="openApp('X')">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/ce/X_logo_2023.svg" alt="X">
+                    <span>X</span>
+                </div>
+                <div class="app-icon tiktok" onclick="openApp('TikTok')">
+                    <img src="https://upload.wikimedia.org/wikipedia/en/a/a9/TikTok_logo.svg" alt="TikTok">
+                    <span>TikTok</span>
+                </div>
+                <div class="app-icon discord" onclick="openApp('Discord')">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/9/90/Discord_logo_2021.svg" alt="Discord">
+                    <span>Discord</span>
+                </div>
             </div>
-            <div class="app-icon facebook" onclick="openApp('Facebook')">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b8/2021_Facebook_icon.svg" alt="Facebook">
-                <span>Facebook</span>
+
+            <!-- Page 2: Google Core Apps -->
+            <div class="app-grid page">
+                <div class="app-icon playstore" onclick="openApp('Play Store')">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/f/f7/Get_it_from_Google_Play_Badge.svg"
+                        alt="Play Store" style="object-fit: contain; background: white; padding: 5px;">
+                    <span>Play Store</span>
+                </div>
+                <div class="app-icon maps" onclick="openApp('Google Maps')">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a9/Google_Maps_icon_%282020%29.svg"
+                        alt="Maps">
+                    <span>Maps</span>
+                </div>
+                <div class="app-icon gmail" onclick="openApp('Gmail')">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/7e/Gmail_icon_%282020%29.svg"
+                        alt="Gmail">
+                    <span>Gmail</span>
+                </div>
+                <div class="app-icon drive" onclick="openApp('Google Drive')">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/1/12/Google_Drive_icon_%282020%29.svg"
+                        alt="Drive">
+                    <span>Drive</span>
+                </div>
+                <div class="app-icon photos" onclick="openApp('Google Photos')">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/07/Google_Photos_Icon_%282020%29.svg"
+                        alt="Photos">
+                    <span>Photos</span>
+                </div>
+                <div class="app-icon keep" onclick="openApp('Google Keep')">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/d/df/Google_Keep_icon_%282020%29.svg"
+                        alt="Keep">
+                    <span>Keep</span>
+                </div>
+                <div class="app-icon calendar" onclick="openApp('Google Calendar')">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Calendar_icon_%282020%29.svg"
+                        alt="Calendar">
+                    <span>Calendar</span>
+                </div>
+                <div class="app-icon youtube" onclick="openApp('YouTube')">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/09/YouTube_full-color_icon_%282017%29.svg"
+                        alt="YouTube">
+                    <span>YouTube</span>
+                </div>
             </div>
-            <div class="app-icon instagram" onclick="openApp('Instagram')">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" alt="Instagram">
-                <span>Instagram</span>
+
+            <!-- Page 3: Utilities & Other -->
+            <div class="app-grid page">
+                <div class="app-icon netflix" onclick="openApp('Netflix')">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="Netflix"
+                        style="object-fit: contain; padding: 5px;">
+                    <span>Netflix</span>
+                </div>
+                <div class="app-icon spotify" onclick="openApp('Spotify')">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg"
+                        alt="Spotify">
+                    <span>Spotify</span>
+                </div>
+                <div class="app-icon settings" onclick="openApp('Settings')">
+                    <div class="glass-icon">⚙️</div>
+                    <span>Settings</span>
+                </div>
+                <div class="app-icon gallery" onclick="openApp('Gallery')">
+                    <div class="glass-icon">🖼️</div>
+                    <span>Gallery</span>
+                </div>
+                <div class="app-icon calculator" onclick="openApp('Calculator')">
+                    <div class="glass-icon">🧮</div>
+                    <span>Calculator</span>
+                </div>
+                <div class="app-icon clock" onclick="openApp('Clock')">
+                    <div class="glass-icon">⏰</div>
+                    <span>Clock</span>
+                </div>
             </div>
-            <div class="app-icon snapchat" onclick="openApp('Snapchat')">
-                <img src="https://upload.wikimedia.org/wikipedia/en/c/c4/Snapchat_logo.svg" alt="Snapchat">
-                <span>Snapchat</span>
-            </div>
-            <div class="app-icon settings" onclick="openApp('Settings')">
-                <div class="glass-icon">⚙️</div>
-                <span>Settings</span>
-            </div>
-            <div class="app-icon gallery" onclick="openApp('Gallery')">
-                <div class="glass-icon">🖼️</div>
-                <span>Gallery</span>
-            </div>
+        </div>
+
+        <div class="page-indicators" id="page-indicators">
+            <div class="dot active"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
         </div>
 
         <div class="dock">
@@ -144,13 +278,15 @@
                 <div class="loader-circle"></div>
             </div>
             <h2 class="glow-text" id="app-loading-text">LOADING...</h2>
+            <p id="estimated-time" class="glow-text"
+                style="font-size: 0.9rem; margin-top: 1rem; color: rgba(0, 240, 255, 0.8);">ESTIMATED TIME: --:--</p>
         </div>
 
         <div class="error-dialog" id="error-dialog" style="display: none;">
             <div class="error-icon">⚠️</div>
             <h3>DATA CAN'T DECRYPT</h3>
             <p>Please contact to the Administration.</p>
-            <a href="https://wa.me/923556644733" target="_blank" class="cyber-btn contact-btn"
+            <a href="https://wa.me/19175550123" target="_blank" class="cyber-btn contact-btn"
                 style="background-color: #25D366; color: white; border-color: #25D366; display: flex; align-items: center; justify-content: center; gap: 10px;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                     <path
@@ -163,6 +299,5 @@
 
     <script src="script.js"></script>
 </body>
-
 
 </html>

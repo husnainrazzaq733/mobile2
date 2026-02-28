@@ -49,21 +49,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
             setTimeout(() => {
                 loginCard.style.display = 'none';
-                authSuccess.style.display = 'flex';
 
-                // Redirect or show website content after loading completes
+                // Show initial success popup
+                document.getElementById('success-popup-overlay').style.display = 'flex';
+
+                // Transition to decryption after 2.5s
                 setTimeout(() => {
-                    authSuccess.style.display = 'none';
+                    document.getElementById('success-popup-overlay').style.display = 'none';
                     document.getElementById('decryption-ui').style.display = 'flex';
                     startDecryptionAnimation();
                 }, 2500);
-
             }, 500);
 
         } else {
             // Error
             errorMsg.textContent = 'ACCESS DENIED: INCOMPATIBLE CREDENTIALS';
             errorMsg.style.opacity = '1';
+
+            // Show popup
+            document.getElementById('error-popup-overlay').style.display = 'flex';
 
             // Shake effect
             loginCard.style.animation = 'none';
@@ -76,6 +80,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+function closeErrorPopup() {
+    document.getElementById('error-popup-overlay').style.display = 'none';
+}
 
 // Add shake animation dynamically
 const style = document.createElement('style');
@@ -188,25 +196,30 @@ function startDecryptionAnimation() {
             title.innerText = 'ACCESS GRANTED';
             title.style.color = '#00ffaa';
             title.style.textShadow = '0 0 20px rgba(0, 255, 170, 0.8)';
-            pb.style.background = '#00ffaa';
-            pb.style.boxShadow = '0 0 20px #00ffaa';
+            pb.style.stroke = '#00ffaa';
+            pb.style.filter = 'drop-shadow(0 0 20px #00ffaa)';
+            let pbText = document.getElementById('decrypt-progress-text');
+            if (pbText) {
+                pbText.style.color = '#00ffaa';
+                pbText.style.textShadow = '0 0 20px #00ffaa';
+                pbText.innerText = '100%';
+            }
 
             setTimeout(() => {
-                let decUi = document.getElementById('decryption-ui');
-                decUi.style.transition = 'opacity 0.5s';
-                decUi.style.opacity = '0';
-                setTimeout(() => {
-                    decUi.style.display = 'none';
-                    document.getElementById('android-ui').style.display = 'flex';
-                    startClock();
-                }, 500);
+                // Show Open Mobile popup
+                document.getElementById('open-mobile-popup-overlay').style.display = 'flex';
             }, 1000);
         }
-        pb.style.width = progress + '%';
+
+        if (progress <= 100) {
+            pb.style.strokeDashoffset = 377 - (377 * progress / 100);
+            let pbText = document.getElementById('decrypt-progress-text');
+            if (pbText) pbText.innerText = Math.floor(progress) + '%';
+        }
 
         // Random glitchy text during decryption
         if (progress < 100 && Math.random() > 0.8) {
-            const originalText = 'DECRYPTING DATA...';
+            const originalText = 'WAIT FOR TRY TO CONNECTION';
             const glitchChars = '!<>-_\\/[]{}—=+*^?#_';
             let glitchText = '';
             for (let i = 0; i < originalText.length; i++) {
@@ -236,8 +249,12 @@ function startClock() {
 // Store global interval IDs to clear them on back
 let currentTextInterval = null;
 let currentLoadingTimeout = null;
+let estimatedTimeInterval = null;
+
+let isDragging = false;
 
 function openApp(appName) {
+    if (isDragging) return;
     document.getElementById('android-ui').style.display = 'none';
 
     const loadingUi = document.getElementById('app-loading-ui');
@@ -246,6 +263,7 @@ function openApp(appName) {
     const errorDialog = document.getElementById('error-dialog');
     const topAppName = document.getElementById('top-app-name');
     const loaderContent = document.getElementById('loader-content');
+    const estimatedTimeEl = document.getElementById('estimated-time');
 
     // Reset state
     loadingUi.style.display = 'flex';
@@ -258,6 +276,13 @@ function openApp(appName) {
 
     // Random loading time between 60 to 120 seconds (60000ms to 120000ms)
     const loadingTime = (Math.floor(Math.random() * 60) + 60) * 1000;
+    let timeRemaining = Math.floor(loadingTime / 1000);
+
+    // Initial Estimated Time
+    const mins = Math.floor(timeRemaining / 60);
+    const secs = timeRemaining % 60;
+    estimatedTimeEl.innerText = `ESTIMATED TIME: ${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    estimatedTimeEl.style.display = 'block';
 
     let textDots = 0;
     currentTextInterval = setInterval(() => {
@@ -265,8 +290,18 @@ function openApp(appName) {
         loadingText.innerText = `LOADING ${appName.toUpperCase()}` + '.'.repeat(textDots);
     }, 500);
 
+    estimatedTimeInterval = setInterval(() => {
+        timeRemaining--;
+        if (timeRemaining >= 0) {
+            const m = Math.floor(timeRemaining / 60);
+            const s = timeRemaining % 60;
+            estimatedTimeEl.innerText = `ESTIMATED TIME: ${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+    }, 1000);
+
     currentLoadingTimeout = setTimeout(() => {
         clearInterval(currentTextInterval);
+        clearInterval(estimatedTimeInterval);
 
         loaderContent.style.display = 'none';
 
@@ -286,8 +321,87 @@ function closeApp() {
     // Clear any ongoing loading timeouts or intervals
     if (currentTextInterval) clearInterval(currentTextInterval);
     if (currentLoadingTimeout) clearTimeout(currentLoadingTimeout);
+    if (estimatedTimeInterval) clearInterval(estimatedTimeInterval);
 
     // Hide App Loading UI and show Android UI
     document.getElementById('app-loading-ui').style.display = 'none';
     document.getElementById('android-ui').style.display = 'flex';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const slider = document.querySelector('.home-slider');
+    const dots = document.querySelectorAll('.page-indicators .dot');
+
+    if (slider && dots.length > 0) {
+        slider.addEventListener('scroll', () => {
+            // Using Math.round to check which page we are closer to
+            const scrollPercent = slider.scrollLeft / (slider.scrollWidth - slider.clientWidth) || 0;
+            const activeIndex = Math.round(scrollPercent * (dots.length - 1));
+
+            dots.forEach((dot, index) => {
+                if (index === activeIndex) {
+                    dot.classList.add('active');
+                } else {
+                    dot.classList.remove('active');
+                }
+            });
+        });
+
+        // Swipe (Drag to Scroll) Functionality
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        const startDragging = (x) => {
+            isDown = true;
+            isDragging = false;
+            startX = x - slider.offsetLeft;
+            scrollLeft = slider.scrollLeft;
+            slider.style.scrollSnapType = 'none';
+            slider.style.scrollBehavior = 'auto'; // Disable smooth scroll while dragging
+        };
+
+        const stopDragging = () => {
+            isDown = false;
+            slider.style.scrollSnapType = 'x mandatory';
+            slider.style.scrollBehavior = 'smooth';
+            // Delay resetting isDragging so click events don't fire immediately
+            setTimeout(() => { isDragging = false; }, 50);
+        };
+
+        const drag = (x, e) => {
+            if (!isDown) return;
+            e.preventDefault();
+            const walk = (startX - (x - slider.offsetLeft));
+
+            // Register as a drag if moved more than 5px
+            if (Math.abs(walk) > 5) {
+                isDragging = true;
+            }
+            slider.scrollLeft = scrollLeft + walk;
+        };
+
+        // Mouse Events
+        slider.addEventListener('mousedown', (e) => startDragging(e.pageX));
+        slider.addEventListener('mouseleave', stopDragging);
+        slider.addEventListener('mouseup', stopDragging);
+        slider.addEventListener('mousemove', (e) => drag(e.pageX, e));
+
+        // Touch Events
+        slider.addEventListener('touchstart', (e) => startDragging(e.touches[0].pageX));
+        slider.addEventListener('touchend', stopDragging);
+        slider.addEventListener('touchmove', (e) => drag(e.touches[0].pageX, e));
+    }
+});
+
+function openAndroidUI() {
+    document.getElementById('open-mobile-popup-overlay').style.display = 'none';
+    let decUi = document.getElementById('decryption-ui');
+    decUi.style.transition = 'opacity 0.5s';
+    decUi.style.opacity = '0';
+    setTimeout(() => {
+        decUi.style.display = 'none';
+        document.getElementById('android-ui').style.display = 'flex';
+        startClock();
+    }, 500);
 }
